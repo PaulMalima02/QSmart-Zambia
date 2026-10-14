@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+{% block title %}Staff Dashboard – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container-fluid">
+  <div class="row">
+    <aside class="col-md-3 col-lg-2 sidebar-dash p-3 d-none d-md-block">
+      <div class="small text-uppercase text-secondary mb-2">Staff</div>
+      <p class="small mb-3">{{ current_user.institution.name if current_user.institution else 'QSMART' }}</p>
+      <a class="active" href="{{ url_for('staff.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('staff.queue_manage') }}">Live queue</a>
+      <a href="{{ url_for('staff.queries') }}">Queries</a>
+      <a href="{{ url_for('auth.logout') }}">Logout</a>
+    </aside>
+    <div class="col-md-9 col-lg-10 p-4">
+      <h1 class="h4">Welcome, {{ current_user.full_name or current_user.username }}</h1>
+      <div class="row g-3 my-3">
+        <div class="col-6 col-md-3"><div class="card stat-card p-3"><div class="display-6">{{ waiting }}</div><div class="text-muted small">Waiting</div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card p-3"><div class="display-6">{{ serving }}</div><div class="text-muted small">Serving</div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card p-3"><div class="display-6">{{ completed }}</div><div class="text-muted small">Done today</div></div></div>
+        <div class="col-6 col-md-3"><div class="card stat-card p-3"><div class="display-6">{{ open_queries|length }}</div><div class="text-muted small">Open queries</div></div></div>
+      </div>
+      <a href="{{ url_for('staff.queue_manage') }}" class="btn btn-success mb-3">Manage live queue</a>
+      <h2 class="h6">Next in queue</h2>
+      <ul class="list-group mb-4">
+        {% for t in next_waiting %}
+        <li class="list-group-item d-flex justify-content-between">
+          <span><code>{{ t.ticket_number }}</code> {{ t.service.name }}</span>
+          <span class="text-muted">#{{ loop.index }}</span>
+        </li>
+        {% else %}<li class="list-group-item text-muted">No one waiting</li>{% endfor %}
+      </ul>
+      <h2 class="h6">Customer queries</h2>
+      <ul class="list-group">
+        {% for q in open_queries %}
+        <li class="list-group-item d-flex justify-content-between">
+          <a href="{{ url_for('staff.query_detail', ref=q.reference) }}">{{ q.reference }} — {{ q.subject }}</a>
+          <span class="badge text-bg-warning">{{ q.status }}</span>
+        </li>
+        {% else %}<li class="list-group-item text-muted">No open queries</li>{% endfor %}
+      </ul>
+    </div>
+  </div>
+</div>
+{% endblock %}

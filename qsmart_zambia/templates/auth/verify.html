@@ -1,0 +1,91 @@
+{% extends "base.html" %}
+{% block title %}Verify account – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:480px">
+  <div class="card border-0 shadow-sm p-4">
+    <h1 class="h5 fw-bold mb-1">Confirm your account</h1>
+    <p class="text-muted small mb-3">
+      Enter the 6-digit code sent to
+      <strong>{{ current_user.phone or current_user.email }}</strong>.
+    </p>
+
+    {% if onscreen_code %}
+    <div class="alert alert-info py-2">
+      <div class="small mb-1"><strong>Local / demo mode</strong> — SMS/email gateway is not configured, so your code is shown here:</div>
+      <div class="display-6 fw-bold text-center letter-spacing" id="otpDisplay">{{ onscreen_code }}</div>
+      <div class="small text-muted text-center mt-1">Also printed in the terminal running <code>python app.py</code></div>
+    </div>
+    {% elif not sms_ready and not email_ready %}
+    <div class="alert alert-warning small py-2">
+      No active code. Tap <strong>Resend SMS</strong> or <strong>Send to email</strong> to generate one.
+      Without an SMS/email provider, the code will appear on this page.
+    </div>
+    {% endif %}
+
+    {% if attempts_left < max_attempts %}
+    <div class="alert alert-secondary small py-2 mb-3">
+      {{ attempts_left }} of {{ max_attempts }} attempts remaining
+    </div>
+    {% endif %}
+
+    <form method="POST" id="otpForm" autocomplete="off">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="verify">
+      <input type="hidden" name="otp" id="otpHidden" value="">
+
+      <div class="otp-boxes d-flex justify-content-center gap-2 mb-3" id="otpBoxes">
+        {% for i in range(1, 7) %}
+        <input type="text" inputmode="numeric" pattern="[0-9]" maxlength="1"
+               class="form-control otp-digit text-center fw-bold"
+               name="d{{ i }}" id="d{{ i }}" data-index="{{ i }}"
+               aria-label="Digit {{ i }}">
+        {% endfor %}
+      </div>
+
+      <button class="btn btn-success w-100" type="submit" id="verifyBtn">Verify</button>
+    </form>
+
+    <div class="d-flex gap-2 mt-3">
+      <form method="POST" class="flex-fill" id="resendSmsForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="resend_sms">
+        <button class="btn btn-outline-secondary btn-sm w-100 resend-btn" type="submit"
+                id="resendSmsBtn" {% if not resend_allowed %}disabled{% endif %}>
+          <span class="resend-label">Resend SMS</span>
+          <span class="resend-timer {% if resend_allowed %}d-none{% endif %}" id="timerSms">
+            (<span class="countdown">{{ resend_remaining }}</span>s)
+          </span>
+        </button>
+      </form>
+      <form method="POST" class="flex-fill" id="resendEmailForm">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="resend_email">
+        <button class="btn btn-outline-secondary btn-sm w-100 resend-btn" type="submit"
+                id="resendEmailBtn" {% if not resend_allowed %}disabled{% endif %}>
+          <span class="resend-label">Send email code</span>
+          <span class="resend-timer {% if resend_allowed %}d-none{% endif %}" id="timerEmail">
+            (<span class="countdown">{{ resend_remaining }}</span>s)
+          </span>
+        </button>
+      </form>
+    </div>
+
+    <hr>
+    <p class="small text-muted mb-0">
+      <strong>Production:</strong> set <code>SMS_API_KEY</code> + <code>SMS_PROVIDER=africastalking</code>
+      (or <code>EMAIL_PROVIDER=resend</code> / SMTP) in <code>.env</code> to deliver real codes.
+      Until then, on-screen codes work fully for testing.
+    </p>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+window.QSMART_OTP = {
+  resendRemaining: {{ resend_remaining|int }},
+  cooldown: {{ cooldown_seconds|int }}
+};
+</script>
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

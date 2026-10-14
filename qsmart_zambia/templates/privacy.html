@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Privacy – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:720px">
+  <h1 class="h3">Privacy notice</h1>
+  <p class="text-muted">Version {{ config.get('PRIVACY_POLICY_VERSION', '1.0') if config is defined else '1.0' }}</p>
+  <h2 class="h6 mt-4">What we collect</h2>
+  <p>Name, email, phone number, and optional address — only as needed to issue queue tickets, send status alerts, and handle support queries.</p>
+  <h2 class="h6">Purpose</h2>
+  <p>Data is used solely for queue management, notifications, and institutional queries. We do not sell personal data.</p>
+  <h2 class="h6">Public screens</h2>
+  <p>Waiting-room displays show <strong>ticket numbers only</strong>, never your full name.</p>
+  <h2 class="h6">Retention &amp; deletion</h2>
+  <p>Audit and SMS logs are retained for a limited period, then purged. You may request account deletion; personal fields are anonymised.</p>
+  <h2 class="h6">Security</h2>
+  <p>Passwords are hashed. Sessions expire on idle shared devices. Access is role-based with audit logging.</p>
+  <a href="{{ url_for('main.index') }}" class="btn btn-success mt-3">Back</a>
+</div>
+{% endblock %}

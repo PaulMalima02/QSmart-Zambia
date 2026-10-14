@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Notifications{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:640px">
+  <h1 class="h4">Notifications</h1>
+  {% for n in notifications %}
+  <div class="border-bottom py-2">
+    <strong>{{ n.title }}</strong>
+    <div class="small">{{ n.body }}</div>
+    <div class="text-muted small">{{ n.created_at.strftime('%d %b %Y %H:%M') }}</div>
+  </div>
+  {% else %}
+  <p class="text-muted">No notifications.</p>
+  {% endfor %}
+</div>
+{% endblock %}

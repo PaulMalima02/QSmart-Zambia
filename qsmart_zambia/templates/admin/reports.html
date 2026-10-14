@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Reports{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h4">Reports &amp; audit</h1>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3"><div class="card stat-card p-3"><div class="h3">{{ summary.completed_today }}</div><div class="small text-muted">Completed today</div></div></div>
+    <div class="col-md-3"><div class="card stat-card p-3"><div class="h3">{{ summary.completed_week }}</div><div class="small text-muted">Completed (7d)</div></div></div>
+    <div class="col-md-3"><div class="card stat-card p-3"><div class="h3">{{ summary.queries_week }}</div><div class="small text-muted">Queries (7d)</div></div></div>
+    <div class="col-md-3"><div class="card stat-card p-3"><div class="h3">{{ summary.sms_sent }}/{{ summary.sms_failed }}</div><div class="small text-muted">SMS sent / failed</div></div></div>
+  </div>
+  <h2 class="h6">Completions by institution (7 days)</h2>
+  <ul>{% for name, cnt in by_inst %}<li>{{ name }}: {{ cnt }}</li>{% else %}<li class="text-muted">No data</li>{% endfor %}</ul>
+  <h2 class="h6 mt-4">Audit log</h2>
+  <div class="table-responsive">
+    <table class="table table-sm">
+      <thead><tr><th>When</th><th>User</th><th>Action</th><th>Detail</th></tr></thead>
+      <tbody>
+        {% for a in audits %}
+        <tr>
+          <td class="small">{{ a.created_at.strftime('%d %b %H:%M') }}</td>
+          <td><code>{{ a.username or '—' }}</code></td>
+          <td>{{ a.action }}</td>
+          <td class="small text-muted">{{ a.detail or '' }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

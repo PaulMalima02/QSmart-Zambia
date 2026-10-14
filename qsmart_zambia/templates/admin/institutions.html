@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Institutions{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h4">Institutions</h1>
+  <form method="POST" class="card border-0 shadow-sm p-3 mb-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="row g-2">
+      <div class="col-md-3"><input class="form-control" name="name" placeholder="Name" required></div>
+      <div class="col-md-2"><input class="form-control" name="code" placeholder="CODE" required></div>
+      <div class="col-md-2">
+        <select class="form-select" name="category">
+          <option value="government">Government</option>
+          <option value="bank">Bank</option>
+          <option value="hospital">Hospital</option>
+          <option value="utility">Utility</option>
+        </select>
+      </div>
+      <div class="col-md-2"><input class="form-control" name="city" placeholder="City" value="Lusaka"></div>
+      <div class="col-md-2"><input class="form-control" name="branch_name" placeholder="Branch" value="Main"></div>
+      <div class="col-md-1"><button class="btn btn-success w-100">Add</button></div>
+    </div>
+  </form>
+  <table class="table table-sm">
+    <thead><tr><th>Name</th><th>Category</th><th>Status</th><th></th></tr></thead>
+    <tbody>
+      {% for i in institutions %}
+      <tr>
+        <td>{{ i.name }} <span class="text-muted small">{{ i.code }}</span></td>
+        <td>{{ i.category }}</td>
+        <td>{{ 'Active' if i.is_active else 'Inactive' }}</td>
+        <td>
+          <form method="POST" action="{{ url_for('admin.toggle_institution', iid=i.id) }}">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-outline-secondary">{{ 'Deactivate' if i.is_active else 'Activate' }}</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

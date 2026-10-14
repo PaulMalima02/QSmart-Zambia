@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Login – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:440px">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <h1 class="h4 fw-bold mb-1">Sign in</h1>
+      <p class="text-muted small mb-3">
+        {% if role == 'admin' %}Administrator login
+        {% elif role == 'staff' %}Staff login
+        {% else %}Customer login{% endif %}
+      </p>
+
+      {% if unverified %}
+      <div class="alert alert-warning small py-2">
+        Your account is not yet verified. After signing in you will be asked to enter the confirmation code.
+      </div>
+      {% endif %}
+
+      <form method="POST" novalidate>
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="role" value="{{ role }}">
+        <div class="mb-3">
+          <label class="form-label">Account type</label>
+          <select name="role" class="form-select" onchange="location.href='{{ url_for('auth.login') }}?role='+this.value">
+            <option value="customer" {% if role=='customer' %}selected{% endif %}>Customer</option>
+            <option value="staff" {% if role=='staff' %}selected{% endif %}>Staff</option>
+            <option value="admin" {% if role=='admin' %}selected{% endif %}>Administrator</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="username">Email or username</label>
+          <input class="form-control" id="username" name="username" required autocomplete="username">
+        </div>
+        <div class="mb-3">
+          <label class="form-label" for="password">Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="password" name="password" required autocomplete="current-password">
+            <button class="btn btn-outline-secondary" type="button" data-toggle-password="password"><i class="bi bi-eye"></i></button>
+          </div>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" name="remember" id="remember">
+          <label class="form-check-label" for="remember">Remember me</label>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Login</button>
+      </form>
+      <div class="d-flex justify-content-between mt-3 small">
+        <a href="{{ url_for('auth.register', role='customer' if role=='customer' else 'staff') }}">Register</a>
+        <a href="{{ url_for('auth.forgot_password') }}">Forgot password?</a>
+      </div>
+      {% if role == 'admin' %}
+      <p class="small text-muted mt-3 mb-0">Admin accounts are created by system setup only — not public registration.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

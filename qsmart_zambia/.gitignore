@@ -1,0 +1,15 @@
+.env
+venv/
+.venv/
+__pycache__/
+*.pyc
+instance/
+*.db
+.pytest_cache/
+.mypy_cache/
+static/uploads/voice/*
+static/uploads/images/*
+static/uploads/docs/*
+!static/uploads/voice/.gitkeep
+!static/uploads/images/.gitkeep
+!static/uploads/docs/.gitkeep

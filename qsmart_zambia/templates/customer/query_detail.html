@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ query.reference }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:640px">
+  <h1 class="h5">{{ query.reference }} — {{ query.subject }}</h1>
+  <p class="text-muted small">{{ query.institution.name if query.institution else '' }} · {{ query.status }}</p>
+  <div class="mb-3">
+    {% for m in messages %}
+    <div class="p-3 mb-2 rounded border {% if m.is_staff %}bg-light{% endif %}">
+      <div class="small text-muted">{{ 'Staff' if m.is_staff else 'You' }} · {{ m.created_at.strftime('%d %b %Y %H:%M') }}</div>
+      <div>{{ m.body }}</div>
+      {% if m.voice_path %}
+      <audio controls class="mt-2 w-100" src="{{ url_for('static', filename=m.voice_path) }}"></audio>
+      {% endif %}
+      {% if m.attachment_path %}
+        {% if m.attachment_type == 'image' %}
+        <div class="msg-attach mt-2">
+          <a href="{{ url_for('static', filename=m.attachment_path) }}" target="_blank">
+            <img src="{{ url_for('static', filename=m.attachment_path) }}" alt="Attachment">
+          </a>
+        </div>
+        {% else %}
+        <a class="btn btn-sm btn-outline-secondary mt-2" href="{{ url_for('static', filename=m.attachment_path) }}" target="_blank">
+          <i class="bi bi-file-earmark"></i> {{ m.attachment_name or 'Download file' }}
+        </a>
+        {% endif %}
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+  {% if query.status not in ['closed','resolved'] %}
+  <form method="POST" enctype="multipart/form-data" data-voice-composer>
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="query-composer mb-2">
+      <textarea class="form-control" name="message" rows="2" placeholder="Reply…"></textarea>
+      <div class="query-composer-toolbar">
+        <label class="attach-btn mb-0" title="Attach photo or document">
+          <i class="bi bi-paperclip"></i>
+          <input type="file" name="attachment" class="d-none" accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt">
+        </label>
+        <button type="button" class="mic-btn" id="micBtn" title="Record voice note"><i class="bi bi-mic-fill"></i></button>
+        <span class="rec-status" id="recStatus"></span>
+      </div>
+      <input type="file" name="voice_note" id="voiceFile" class="d-none" accept="audio/*">
+    </div>
+    <button class="btn btn-success btn-sm">Send reply</button>
+  </form>
+  {% endif %}
+  <a href="{{ url_for('customer.my_queries') }}" class="btn btn-link btn-sm">Back</a>
+</div>
+{% endblock %}
+{% block extra_js %}
+<script src="{{ url_for('static', filename='js/voice.js') }}"></script>
+{% endblock %}

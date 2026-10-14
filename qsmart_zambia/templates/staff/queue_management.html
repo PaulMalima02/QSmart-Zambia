@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Live queue{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h4 mb-3">Live queue</h1>
+  <p class="text-muted small">Call → Serve → Complete. Completing notifies the next customer.</p>
+  <div class="row g-4">
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Waiting ({{ waiting|length }})</div>
+        <ul class="list-group list-group-flush">
+          {% for t in waiting %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div><code>{{ t.ticket_number }}</code> {{ t.service.name }}
+                <div class="small text-muted">Customer (name hidden on staff list)</div>
+              </div>
+              <form method="POST" class="d-flex gap-1">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <input type="hidden" name="ticket_id" value="{{ t.id }}">
+                <input type="hidden" name="action" value="call">
+                <select name="counter_id" class="form-select form-select-sm" style="width:auto">
+                  {% for c in counters %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+                </select>
+                <button class="btn btn-sm btn-success">Call</button>
+              </form>
+            </div>
+          </li>
+          {% else %}<li class="list-group-item text-muted">Empty</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+    <div class="col-md-6">
+      <div class="card border-0 shadow-sm">
+        <div class="card-header bg-white fw-semibold">Called / Serving ({{ serving|length }})</div>
+        <ul class="list-group list-group-flush">
+          {% for t in serving %}
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+              <div><code>{{ t.ticket_number }}</code> <span class="badge badge-{{ t.status }}">{{ t.status }}</span>
+                <div class="small text-muted">{{ t.counter.name if t.counter else '' }}</div>
+              </div>
+              <div class="d-flex gap-1">
+                {% if t.status == 'called' %}
+                <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="ticket_id" value="{{ t.id }}"><input type="hidden" name="action" value="serve">
+                  <button class="btn btn-sm btn-outline-primary">Start serving</button></form>
+                {% endif %}
+                <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="ticket_id" value="{{ t.id }}"><input type="hidden" name="action" value="complete">
+                  <button class="btn btn-sm btn-success">Complete</button></form>
+                <form method="POST"><input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                  <input type="hidden" name="ticket_id" value="{{ t.id }}"><input type="hidden" name="action" value="skip">
+                  <button class="btn btn-sm btn-outline-secondary">Skip</button></form>
+              </div>
+            </div>
+          </li>
+          {% else %}<li class="list-group-item text-muted">None</li>{% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  <a href="{{ url_for('staff.dashboard') }}" class="btn btn-link mt-3">← Dashboard</a>
+</div>
+{% endblock %}
