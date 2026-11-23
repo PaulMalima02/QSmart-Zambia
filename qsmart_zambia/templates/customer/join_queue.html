@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}Join queue – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:560px">
+  <h1 class="h4">Join a queue</h1>
+  <form method="POST" class="card border-0 shadow-sm p-4">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <div class="mb-3">
+      <label class="form-label">Institution &amp; service</label>
+      <select name="service_id" class="form-select" required>
+        <option value="">— Select service —</option>
+        {% for inst in institutions %}
+          {% for svc in inst.services.filter_by(is_active=True) %}
+          <option value="{{ svc.id }}">{{ inst.name }} — {{ svc.name }}</option>
+          {% endfor %}
+        {% endfor %}
+      </select>
+    </div>
+    <button class="btn btn-success" type="submit">Get ticket</button>
+    <a href="{{ url_for('customer.dashboard') }}" class="btn btn-link">Cancel</a>
+  </form>
+</div>
+{% endblock %}

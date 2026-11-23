@@ -1,0 +1,130 @@
+:root {
+  --q-navy: #0b1f3a;
+  --q-green: #0d9488;
+  --q-green-dark: #0f766e;
+}
+.bg-qsmart { background: var(--q-navy) !important; }
+.btn-success { background: var(--q-green); border-color: var(--q-green); }
+.btn-success:hover { background: var(--q-green-dark); border-color: var(--q-green-dark); }
+.text-qsmart { color: var(--q-green); }
+.hero-qsmart {
+  background: linear-gradient(135deg, #0b1f3a 0%, #134e4a 100%);
+  color: #fff;
+  padding: 4rem 0 3rem;
+}
+.stat-card {
+  border: 0;
+  border-radius: 12px;
+  box-shadow: 0 4px 14px rgba(0,0,0,.06);
+}
+.stat-card .display-6 { font-weight: 700; color: var(--q-navy); }
+.badge-waiting { background: #f59e0b; }
+.badge-called, .badge-serving { background: #0d9488; }
+.badge-completed { background: #16a34a; }
+.badge-cancelled, .badge-skipped { background: #94a3b8; }
+.sidebar-dash {
+  min-height: calc(100vh - 56px);
+  background: #0b1f3a;
+  color: #e2e8f0;
+}
+.sidebar-dash a {
+  color: #cbd5e1;
+  text-decoration: none;
+  display: block;
+  padding: .6rem 1rem;
+  border-radius: 8px;
+}
+.sidebar-dash a:hover, .sidebar-dash a.active {
+  background: rgba(13,148,136,.25);
+  color: #fff;
+}
+.map-box { height: 320px; border-radius: 12px; border: 1px solid #e2e8f0; }
+.password-toggle { cursor: pointer; }
+
+/* WhatsApp-style query composer */
+.query-composer {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 0.5rem;
+}
+.query-composer textarea {
+  border: 0;
+  background: transparent;
+  resize: none;
+  box-shadow: none !important;
+}
+.query-composer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.35rem;
+}
+.mic-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: #0d9488;
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.mic-btn:hover { background: #0f766e; }
+.mic-btn.recording {
+  background: #dc2626;
+  animation: pulse-rec 1s infinite;
+}
+@keyframes pulse-rec {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(220, 38, 38, .45); }
+  50% { box-shadow: 0 0 0 10px rgba(220, 38, 38, 0); }
+}
+.attach-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: #e2e8f0;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.rec-status { font-size: 0.8rem; color: #64748b; min-height: 1.2em; }
+.msg-attach img { max-width: 220px; border-radius: 10px; }
+
+/* OTP digit boxes */
+.otp-boxes .otp-digit {
+  width: 48px;
+  height: 56px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #e2e8f0;
+  transition: border-color .15s, box-shadow .15s;
+}
+.otp-boxes .otp-digit:focus {
+  border-color: var(--q-green);
+  box-shadow: 0 0 0 3px rgba(13, 148, 136, .2);
+  outline: none;
+}
+.letter-spacing {
+  letter-spacing: 0.25em;
+}
+.resend-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.resend-timer {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Password reset subtle polish */
+.card .form-control:focus {
+  border-color: var(--q-green);
+  box-shadow: 0 0 0 0.2rem rgba(13, 148, 136, .2);
+}

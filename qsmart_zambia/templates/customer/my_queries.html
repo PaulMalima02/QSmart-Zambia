@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}My queries{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h4">My queries</h1>
+  <a href="{{ url_for('customer.send_query') }}" class="btn btn-sm btn-success mb-3">New query</a>
+  <div class="list-group">
+    {% for q in queries %}
+    <a href="{{ url_for('customer.query_detail', ref=q.reference) }}" class="list-group-item list-group-item-action d-flex justify-content-between">
+      <span><strong>{{ q.reference }}</strong> — {{ q.subject }} <span class="text-muted small">{{ q.institution.name if q.institution else '' }}</span></span>
+      <span class="badge text-bg-secondary">{{ q.status }}</span>
+    </a>
+    {% else %}
+    <p class="text-muted">No queries yet.</p>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

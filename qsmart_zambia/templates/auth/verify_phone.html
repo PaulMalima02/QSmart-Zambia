@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Confirm mobile – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:460px">
+  <div class="card border-0 shadow-sm p-4">
+    <h1 class="h5 fw-bold">Confirm your account</h1>
+    <p class="text-muted small">
+      Enter the 6-digit code for
+      <strong>{{ current_user.phone or current_user.email }}</strong>.
+    </p>
+
+    {% if onscreen_code %}
+    <div class="alert alert-info">
+      <div class="small mb-1"><strong>Local / demo mode</strong> — SMS/email gateway is not configured, so your code is shown here:</div>
+      <div class="display-6 fw-bold text-center letter-spacing" id="otpDisplay">{{ onscreen_code }}</div>
+      <div class="small text-muted text-center mt-1">Also printed in the terminal running <code>python app.py</code></div>
+    </div>
+    {% elif not sms_ready and not email_ready %}
+    <div class="alert alert-warning small">
+      No active code. Tap <strong>Resend SMS</strong> or <strong>Send to email</strong> to generate one.
+      Without an SMS/email provider, the code will appear on this page.
+    </div>
+    {% endif %}
+
+    <form method="POST">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <input type="hidden" name="action" value="verify">
+      <div class="mb-3">
+        <label class="form-label">Confirmation code</label>
+        <input class="form-control form-control-lg text-center" name="otp" id="otpInput"
+               maxlength="6" pattern="[0-9]{6}" required placeholder="••••••"
+               autocomplete="one-time-code"
+               value="{{ onscreen_code or '' }}">
+      </div>
+      <button class="btn btn-success w-100" type="submit">Verify</button>
+    </form>
+
+    <div class="d-flex gap-2 mt-3">
+      <form method="POST" class="flex-fill">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="resend_sms">
+        <button class="btn btn-outline-secondary btn-sm w-100" type="submit">Resend / show SMS code</button>
+      </form>
+      <form method="POST" class="flex-fill">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="resend_email">
+        <button class="btn btn-outline-secondary btn-sm w-100" type="submit">Send / show email code</button>
+      </form>
+    </div>
+
+    <hr>
+    <p class="small text-muted mb-0">
+      <strong>Production:</strong> set <code>SMS_API_KEY</code> + <code>SMS_PROVIDER=africastalking</code>
+      (or SMTP for email) in <code>.env</code> to deliver real codes. Until then, on-screen codes work fully for testing.
+    </p>
+  </div>
+</div>
+{% endblock %}

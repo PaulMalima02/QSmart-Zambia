@@ -1,0 +1,109 @@
+{% extends "base.html" %}
+{% block title %}Register – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:520px">
+  <div class="card shadow-sm border-0">
+    <div class="card-body p-4">
+      <h1 class="h4 fw-bold">Create account</h1>
+      <p class="text-muted small">Customer or staff only. Administrators are set up securely by the system owner.</p>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <div class="mb-3">
+          <label class="form-label">I am registering as</label>
+          <select name="role" id="regRole" class="form-select">
+            <option value="customer" {% if role=='customer' %}selected{% endif %}>Customer</option>
+            <option value="staff" {% if role=='staff' %}selected{% endif %}>Staff (needs admin approval)</option>
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Full name</label>
+          <input class="form-control" name="full_name" required pattern="[A-Za-z][A-Za-z\s\-']{1,119}" title="Letters only (spaces, hyphens, apostrophes allowed)" autocomplete="name">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Username</label>
+          <input class="form-control" name="username" required pattern="[a-zA-Z0-9_]{3,30}" title="3–30 letters, numbers or underscore (not numbers only)" autocomplete="username">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Email</label>
+          <input type="email" class="form-control" name="email" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Phone (+260)</label>
+          <input class="form-control" name="phone" placeholder="097XXXXXXX or +26097XXXXXXX" required inputmode="numeric" pattern="[0-9+\s\-]{9,16}" title="Digits only — Zambian mobile e.g. 097XXXXXXX" autocomplete="tel">
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Verify via</label>
+          <select name="verify_channel" class="form-select">
+            <option value="sms" selected>SMS (recommended)</option>
+            <option value="email">Email</option>
+          </select>
+          <div class="form-text">Choose how you want to receive the verification code.</div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Address (optional)</label>
+          <input class="form-control" name="address">
+        </div>
+        <div id="staffFields" class="{% if role != 'staff' %}d-none{% endif %}">
+          <div class="mb-3">
+            <label class="form-label">Institution</label>
+            <select class="form-select" name="institution_id">
+              <option value="">— Select —</option>
+              {% for i in institutions %}
+              <option value="{{ i.id }}">{{ i.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Staff role</label>
+            <select class="form-select" name="staff_role">
+              <option value="counter_staff">Counter staff</option>
+              <option value="receptionist">Receptionist</option>
+              <option value="supervisor">Supervisor</option>
+              <option value="institution_admin">Institution admin</option>
+              <option value="staff">General staff</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Department / service</label>
+            <input class="form-control" name="department">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Staff ID number</label>
+            <input class="form-control" name="staff_id_number">
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Note for admin</label>
+            <textarea class="form-control" name="staff_note" rows="2"></textarea>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="password" name="password" required minlength="8">
+            <button class="btn btn-outline-secondary" type="button" data-toggle-password="password"><i class="bi bi-eye"></i></button>
+          </div>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">Confirm password</label>
+          <input type="password" class="form-control" name="confirm_password" required>
+        </div>
+        <div class="form-check mb-3">
+          <input class="form-check-input" type="checkbox" name="privacy_consent" id="privacy_consent" value="1" required>
+          <label class="form-check-label small" for="privacy_consent">
+            I agree that QSMART Zambia may process my name, email and phone
+            <strong>only</strong> to provide queue tickets, notifications and support queries.
+            I can request deletion of my data. See <a href="{{ url_for('main.privacy') }}" target="_blank">Privacy notice</a>.
+          </label>
+        </div>
+        <button type="submit" class="btn btn-success w-100">Register</button>
+      </form>
+      <p class="small mt-3 mb-0">Already registered? <a href="{{ url_for('auth.login') }}">Login</a></p>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('regRole').addEventListener('change', function() {
+  document.getElementById('staffFields').classList.toggle('d-none', this.value !== 'staff');
+});
+</script>
+{% endblock %}

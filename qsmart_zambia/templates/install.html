@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Install QSMART – Android & iPhone{% endblock %}
+{% block meta_description %}Install QSMART Zambia on your Android phone or iPhone. Add to Home Screen and use it like an app — free, no App Store required.{% endblock %}
+{% block content %}
+<div class="container py-5" style="max-width:640px">
+  <div class="text-center mb-4">
+    <img src="{{ url_for('static', filename='images/icon-192.png') }}" width="72" height="72" class="rounded-3 mb-2" alt="QSMART">
+    <h1 class="h3 fw-bold">Install QSMART on your phone</h1>
+    <p class="text-muted">Works on <strong>Android</strong> and <strong>iPhone</strong>. No Play Store or App Store needed — install from the browser.</p>
+  </div>
+
+  <div class="alert alert-info small">
+    <strong>Important:</strong> Open this page on your <em>phone</em> (not a desktop).
+    For the Install button to appear, the site must be served over <strong>HTTPS</strong>
+    (or <code>localhost</code>). On the same Wi‑Fi use your PC’s IP, or a free tunnel like ngrok.
+  </div>
+
+  <!-- Android -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <h2 class="h5 fw-bold"><i class="bi bi-android2 text-success me-1"></i> Android (Chrome / Edge)</h2>
+      <ol class="mb-3 small">
+        <li>Open <strong>QSMART</strong> in <strong>Chrome</strong> on your phone.</li>
+        <li>Tap the <strong>⋮</strong> menu (top right).</li>
+        <li>Tap <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li>
+        <li>Confirm — QSMART appears on your home screen like any app.</li>
+      </ol>
+      <p class="small text-muted mb-0">If you see an <strong>Install</strong> banner at the bottom of the site, tap it.</p>
+    </div>
+  </div>
+
+  <!-- iPhone -->
+  <div class="card border-0 shadow-sm mb-4">
+    <div class="card-body p-4">
+      <h2 class="h5 fw-bold"><i class="bi bi-apple me-1"></i> iPhone / iPad (Safari)</h2>
+      <ol class="mb-3 small">
+        <li>Open <strong>QSMART</strong> in <strong>Safari</strong> (not Chrome on iOS).</li>
+        <li>Tap the <strong>Share</strong> button <i class="bi bi-box-arrow-up"></i> at the bottom.</li>
+        <li>Scroll and tap <strong>Add to Home Screen</strong>.</li>
+        <li>Tap <strong>Add</strong> — the QSMART icon appears on your home screen.</li>
+      </ol>
+      <p class="small text-muted mb-0">iPhone does not show a browser “Install” popup; Share → Add to Home Screen is the official way.</p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-4 bg-light">
+    <div class="card-body p-4">
+      <h2 class="h6 fw-bold">After installing</h2>
+      <ul class="small mb-0">
+        <li>Opens full-screen (no browser address bar).</li>
+        <li>Works offline for cached pages; live queues need internet.</li>
+        <li>Same login as the website — register once, use anywhere.</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="text-center">
+    <a class="btn btn-success" href="{{ url_for('auth.register') }}">Register on this device</a>
+    <a class="btn btn-outline-secondary" href="{{ url_for('main.index') }}">Back to home</a>
+  </div>
+</div>
+{% endblock %}

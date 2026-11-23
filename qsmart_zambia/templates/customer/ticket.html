@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }}{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:480px">
+  <div class="card border-0 shadow-sm p-4 text-center">
+    <div class="text-muted small">Ticket number</div>
+    <div class="display-6 fw-bold text-qsmart">{{ ticket.ticket_number }}</div>
+    <p class="mt-3 mb-1"><strong>{{ ticket.service.name }}</strong></p>
+    <p class="text-muted">{{ ticket.institution.name if ticket.institution else '' }}</p>
+    <span class="badge badge-{{ ticket.status }} fs-6">{{ ticket.status }}</span>
+    {% if ticket.status == 'waiting' %}
+    <p class="mt-3 mb-0">Position <strong>#{{ ticket.position }}</strong></p>
+    <p class="text-muted">Est. wait ~{{ ticket.estimated_wait or '—' }} min</p>
+    {% if pickup_tip %}
+    <div class="alert alert-info small text-start mt-3 mb-0">{{ pickup_tip }}</div>
+    {% endif %}
+    <form method="POST" action="{{ url_for('customer.cancel_ticket', ticket_number=ticket.ticket_number) }}" onsubmit="return confirm('Cancel ticket?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-outline-danger btn-sm mt-3">Cancel ticket</button>
+    </form>
+    {% endif %}
+    <a href="{{ url_for('customer.dashboard') }}" class="btn btn-link mt-3">Back</a>
+  </div>
+</div>
+{% endblock %}

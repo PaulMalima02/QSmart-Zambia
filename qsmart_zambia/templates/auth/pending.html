@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Pending approval{% endblock %}
+{% block content %}
+<div class="container py-5 text-center" style="max-width:480px">
+  <div class="card border-0 shadow-sm p-4">
+    <span class="badge text-bg-warning mb-2">Pending approval</span>
+    <h1 class="h4">Waiting for administrator</h1>
+    <p class="text-muted">
+      Hello {{ current_user.full_name or current_user.username }}.
+      Your staff application for
+      <strong>{{ current_user.institution.name if current_user.institution else 'your institution' }}</strong>
+      must be approved before you can manage queues.
+    </p>
+    <a href="{{ url_for('auth.logout') }}" class="btn btn-outline-secondary">Logout</a>
+  </div>
+</div>
+{% endblock %}

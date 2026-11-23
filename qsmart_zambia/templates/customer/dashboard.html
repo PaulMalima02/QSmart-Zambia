@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+{% block title %}Customer Dashboard – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+    <div>
+      <h1 class="h3 mb-0">Hello, {{ current_user.full_name or current_user.username }}</h1>
+      <p class="text-muted mb-0">Find institutions, join queues, send queries</p>
+    </div>
+    <div class="d-flex gap-2">
+      <a href="{{ url_for('customer.join_queue') }}" class="btn btn-success">Join queue</a>
+      <a href="{{ url_for('customer.send_query') }}" class="btn btn-outline-primary">Send query</a>
+      <a href="{{ url_for('customer.notifications') }}" class="btn btn-outline-secondary">
+        Alerts {% if unread_count %}<span class="badge bg-danger">{{ unread_count }}</span>{% endif %}
+      </a>
+    </div>
+  </div>
+
+  {% if tickets %}
+  <h2 class="h5">My queues</h2>
+  <div class="list-group mb-4">
+    {% for t in tickets %}
+    <a href="{{ url_for('customer.ticket', ticket_number=t.ticket_number) }}" class="list-group-item list-group-item-action d-flex justify-content-between">
+      <div>
+        <strong>{{ t.ticket_number }}</strong> — {{ t.service.name }}
+        <div class="small text-muted">{{ t.institution.name if t.institution else '' }}</div>
+      </div>
+      <span class="badge badge-{{ t.status }}">{{ t.status }}{% if t.status=='waiting' %} #{{ t.position }}{% endif %}</span>
+    </a>
+    {% endfor %}
+  </div>
+  {% endif %}
+
+  <form class="row g-2 mb-3" method="GET">
+    <div class="col-md-4"><input class="form-control" name="q" value="{{ search }}" placeholder="Search institutions"></div>
+    <div class="col-md-3">
+      <select class="form-select" name="category">
+        <option value="">All categories</option>
+        <option value="government" {% if selected_category=='government' %}selected{% endif %}>Government</option>
+        <option value="bank" {% if selected_category=='bank' %}selected{% endif %}>Banks</option>
+        <option value="hospital" {% if selected_category=='hospital' %}selected{% endif %}>Hospitals</option>
+        <option value="utility" {% if selected_category=='utility' %}selected{% endif %}>Utilities</option>
+      </select>
+    </div>
+    <div class="col-md-3">
+      <select class="form-select" name="city">
+        <option value="">All cities</option>
+        {% for c in cities %}<option value="{{ c }}" {% if selected_city==c %}selected{% endif %}>{{ c }}</option>{% endfor %}
+      </select>
+    </div>
+    <div class="col-md-2"><button class="btn btn-success w-100">Search</button></div>
+  </form>
+
+  <div id="map" class="map-box mb-4"></div>
+
+  <div class="row g-3">
+    {% for inst in institutions %}
+    <div class="col-md-6 col-lg-4">
+      <div class="card h-100 shadow-sm border-0">
+        <div class="card-body">
+          <span class="badge text-bg-light text-uppercase small">{{ inst.category }}</span>
+          <h3 class="h6 mt-2">{{ inst.name }}</h3>
+          {% set b = inst.branches.filter_by(is_active=True).first() %}
+          {% if b %}<p class="small text-muted mb-2">{{ b.city or '' }}{% if b.address %} · {{ b.address }}{% endif %}</p>{% endif %}
+          {% if inst.phone %}<p class="small mb-2"><i class="bi bi-telephone"></i> {{ inst.phone }}</p>{% endif %}
+          <a href="{{ url_for('customer.join_queue') }}?inst={{ inst.id }}" class="btn btn-sm btn-success">Join queue</a>
+        </div>
+      </div>
+    </div>
+    {% else %}
+    <p class="text-muted">No institutions match your search.</p>
+    {% endfor %}
+  </div>
+
+  {% if queries %}
+  <h2 class="h5 mt-5">Recent queries</h2>
+  <ul class="list-group">
+    {% for q in queries %}
+    <li class="list-group-item d-flex justify-content-between">
+      <a href="{{ url_for('customer.query_detail', ref=q.reference) }}">{{ q.reference }} — {{ q.subject }}</a>
+      <span class="badge text-bg-secondary">{{ q.status }}</span>
+    </li>
+    {% endfor %}
+  </ul>
+  <a class="small" href="{{ url_for('customer.my_queries') }}">View all queries</a>
+  {% endif %}
+</div>
+{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+{% endblock %}
+{% block extra_js %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script>
+(function(){
+  var pts = {{ map_points|tojson }};
+  var map = L.map('map').setView([-15.4167, 28.2833], 12);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:18,attribution:'&copy; OpenStreetMap'}).addTo(map);
+  var bounds=[];
+  (pts||[]).forEach(function(p){
+    if(!p.lat||!p.lng) return;
+    L.marker([p.lat,p.lng]).addTo(map).bindPopup('<strong>'+p.name+'</strong><br>'+(p.branch||'')+' · '+(p.city||''));
+    bounds.push([p.lat,p.lng]);
+  });
+  if(bounds.length) map.fitBounds(bounds,{padding:[28,28]});
+})();
+</script>
+{% endblock %}
