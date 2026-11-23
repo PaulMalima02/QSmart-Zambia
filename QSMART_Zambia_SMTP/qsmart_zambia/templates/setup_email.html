@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}Setup email – QSMART Zambia{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:640px">
+  <h1 class="h4 fw-bold mb-2">Make verification emails work</h1>
+  <p class="text-muted small">Paste a free Resend API key (or Gmail SMTP). Settings are saved to <code>.env</code> and applied immediately.</p>
+
+  {% if status.configured %}
+  <div class="alert alert-success small">Email looks configured (provider: <strong>{{ status.provider or "set" }}</strong>). Send a test below.</div>
+  {% else %}
+  <div class="alert alert-warning small">Email is <strong>not configured</strong> — that is why OTP codes never arrive.</div>
+  {% endif %}
+
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+      <h2 class="h6 fw-bold">Option A — Resend (recommended, free)</h2>
+      <ol class="small">
+        <li>Open <a href="https://resend.com/signup" target="_blank" rel="noopener">resend.com/signup</a></li>
+        <li>Sign up with the <strong>same Gmail</strong> you use to register in QSMART</li>
+        <li>API Keys → Create → copy key starting with <code>re_</code></li>
+        <li>Paste below and Save</li>
+      </ol>
+      <form method="POST" class="mt-2">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="save_resend">
+        <div class="mb-2">
+          <label class="form-label small">Resend API key</label>
+          <input class="form-control" name="resend_api_key" placeholder="re_..." value="{{ env.get('RESEND_API_KEY','') }}" required>
+        </div>
+        <div class="mb-2">
+          <label class="form-label small">From (leave default for testing)</label>
+          <input class="form-control" name="mail_sender" value="{{ env.get('MAIL_DEFAULT_SENDER') or 'QSMART Zambia <onboarding@resend.dev>' }}">
+        </div>
+        <button class="btn btn-success btn-sm" type="submit">Save Resend key</button>
+      </form>
+      <p class="small text-muted mt-2 mb-0">Free Resend only delivers to your Resend signup email until you verify a domain.</p>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+      <h2 class="h6 fw-bold">Option B — Gmail SMTP</h2>
+      <p class="small text-muted">Google Account → Security → 2-Step Verification → App passwords → Mail.</p>
+      <form method="POST">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="save_smtp">
+        <div class="row g-2">
+          <div class="col-8"><input class="form-control form-control-sm" name="mail_server" placeholder="smtp.gmail.com" value="{{ env.get('MAIL_SERVER') or 'smtp.gmail.com' }}"></div>
+          <div class="col-4"><input class="form-control form-control-sm" name="mail_port" placeholder="587" value="{{ env.get('MAIL_PORT') or '587' }}"></div>
+          <div class="col-12"><input class="form-control form-control-sm" name="mail_username" placeholder="your@gmail.com" value="{{ env.get('MAIL_USERNAME','') }}"></div>
+          <div class="col-12"><input class="form-control form-control-sm" name="mail_password" type="password" placeholder="16-character app password" value=""></div>
+          <div class="col-12"><input class="form-control form-control-sm" name="mail_sender" placeholder="From email" value="{{ env.get('MAIL_DEFAULT_SENDER') or env.get('MAIL_USERNAME','') }}"></div>
+        </div>
+        <button class="btn btn-outline-success btn-sm mt-2" type="submit">Save SMTP</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="card border-0 shadow-sm mb-3">
+    <div class="card-body">
+      <h2 class="h6 fw-bold">Send test email</h2>
+      <form method="POST" class="d-flex gap-2 flex-wrap">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="hidden" name="action" value="test_send">
+        <input class="form-control" style="max-width:280px" name="test_to" placeholder="poulmalima817@gmail.com" value="{{ env.get('MAIL_USERNAME','') }}">
+        <button class="btn btn-primary" type="submit">Send test</button>
+      </form>
+      {% if test_result %}
+      <p class="small mt-2 mb-0">Result: <strong>{{ 'OK' if test_result.ok else 'FAILED' }}</strong> — {{ test_result.status }} → {{ test_result.to }}</p>
+      {% endif %}
+    </div>
+  </div>
+
+  <p class="small"><a href="{{ url_for('auth.register') }}">← Back to register</a></p>
+</div>
+{% endblock %}

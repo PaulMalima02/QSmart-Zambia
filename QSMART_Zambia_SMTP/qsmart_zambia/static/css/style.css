@@ -1,0 +1,388 @@
+:root {
+  /* QSMART Zambia brand — matched to official logo */
+  --q-green: #00A651;
+  --q-green-dark: #007A3D;
+  --q-green-deeper: #004D28;
+  --q-orange: #F7931E;
+  --q-orange-dark: #E07B00;
+  --q-red: #E31C23;
+  --q-navy: #0A2F1A;
+  --q-navy-light: #0F3D24;
+  --q-bg: #F4F7F5;
+  --q-card-shadow: 0 4px 18px rgba(0, 77, 40, 0.08);
+}
+
+body {
+  background-color: var(--q-bg);
+}
+
+.bg-qsmart {
+  background: linear-gradient(135deg, var(--q-green-deeper) 0%, var(--q-green-dark) 55%, var(--q-green) 100%) !important;
+}
+
+.btn-success {
+  background: var(--q-green);
+  border-color: var(--q-green);
+}
+.btn-success:hover,
+.btn-success:focus {
+  background: var(--q-green-dark);
+  border-color: var(--q-green-dark);
+}
+
+.btn-orange {
+  background: var(--q-orange);
+  border-color: var(--q-orange);
+  color: #fff;
+}
+.btn-orange:hover {
+  background: var(--q-orange-dark);
+  border-color: var(--q-orange-dark);
+  color: #fff;
+}
+
+.text-qsmart { color: var(--q-green); }
+.text-orange { color: var(--q-orange); }
+
+.hero-qsmart {
+  background: linear-gradient(145deg, #004D28 0%, #007A3D 40%, #00A651 100%);
+  color: #fff;
+  padding: 4.5rem 0 3.5rem;
+  position: relative;
+  overflow: hidden;
+}
+.hero-qsmart::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at 70% 30%, rgba(247, 147, 30, 0.18) 0%, transparent 55%);
+  pointer-events: none;
+}
+
+.stat-card {
+  border: 0;
+  border-radius: 14px;
+  box-shadow: var(--q-card-shadow);
+  background: #fff;
+  transition: transform .15s ease, box-shadow .15s ease;
+}
+.stat-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 77, 40, 0.12);
+}
+.stat-card .display-6 {
+  font-weight: 700;
+  color: var(--q-green-deeper);
+}
+
+.badge-waiting { background: var(--q-orange); color: #fff; }
+.badge-called,
+.badge-serving { background: var(--q-green); color: #fff; }
+.badge-completed { background: #16a34a; color: #fff; }
+.badge-cancelled,
+.badge-skipped { background: #94a3b8; color: #fff; }
+
+.sidebar-dash {
+  min-height: calc(100vh - 56px);
+  background: linear-gradient(180deg, var(--q-navy) 0%, var(--q-green-deeper) 100%);
+  color: #e2e8f0;
+}
+.sidebar-dash a {
+  color: #cbd5e1;
+  text-decoration: none;
+  display: block;
+  padding: .65rem 1rem;
+  border-radius: 10px;
+  margin-bottom: 2px;
+  transition: background .15s;
+}
+.sidebar-dash a:hover,
+.sidebar-dash a.active {
+  background: rgba(0, 166, 81, 0.28);
+  color: #fff;
+}
+
+.map-box {
+  height: 320px;
+  border-radius: 14px;
+  border: 1px solid #d1e0d8;
+  box-shadow: var(--q-card-shadow);
+}
+.password-toggle { cursor: pointer; }
+
+/* Navbar brand logo */
+.navbar-brand img {
+  height: 36px;
+  width: auto;
+  margin-right: 0.4rem;
+  border-radius: 8px;
+}
+.navbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+/* Institution cards */
+.inst-card {
+  border: 0;
+  border-radius: 14px;
+  box-shadow: var(--q-card-shadow);
+  transition: transform .15s, box-shadow .15s;
+  overflow: hidden;
+}
+.inst-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 10px 28px rgba(0, 77, 40, 0.14);
+}
+.inst-logo {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  object-fit: cover;
+  background: #e8f5ee;
+}
+.inst-logo-placeholder {
+  width: 48px;
+  height: 48px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, var(--q-green) 0%, var(--q-green-dark) 100%);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+}
+
+/* WhatsApp-style query composer */
+.query-composer {
+  border: 1px solid #d1e0d8;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 0.5rem;
+}
+.query-composer textarea {
+  border: 0;
+  background: transparent;
+  resize: none;
+  box-shadow: none !important;
+}
+.query-composer-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.35rem;
+}
+.mic-btn {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 0;
+  background: var(--q-green);
+  color: #fff;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.25rem;
+  cursor: pointer;
+  transition: background .15s, transform .1s;
+}
+.mic-btn:hover { background: var(--q-green-dark); }
+.mic-btn.recording {
+  background: var(--q-red);
+  animation: pulse-rec 1s infinite;
+}
+@keyframes pulse-rec {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(227, 28, 35, .45); }
+  50% { box-shadow: 0 0 0 10px rgba(227, 28, 35, 0); }
+}
+.attach-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 0;
+  background: #e2e8f0;
+  color: #334155;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.rec-status { font-size: 0.8rem; color: #64748b; min-height: 1.2em; }
+.msg-attach img { max-width: 220px; border-radius: 10px; }
+
+/* OTP digit boxes */
+.otp-boxes .otp-digit {
+  width: 48px;
+  height: 56px;
+  font-size: 1.5rem;
+  border-radius: 10px;
+  border: 2px solid #d1e0d8;
+  transition: border-color .15s, box-shadow .15s;
+}
+.otp-boxes .otp-digit:focus {
+  border-color: var(--q-green);
+  box-shadow: 0 0 0 3px rgba(0, 166, 81, .22);
+  outline: none;
+}
+.letter-spacing { letter-spacing: 0.25em; }
+.resend-btn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+.resend-timer { font-variant-numeric: tabular-nums; }
+
+.card .form-control:focus {
+  border-color: var(--q-green);
+  box-shadow: 0 0 0 0.2rem rgba(0, 166, 81, .2);
+}
+
+/* Footer polish */
+.footer-qsmart {
+  background: var(--q-navy);
+  color: #a7c4b5;
+  padding: 2rem 0 1.5rem;
+  margin-top: 3rem;
+}
+.footer-qsmart a { color: #c8e0d4; text-decoration: none; }
+.footer-qsmart a:hover { color: #fff; }
+.footer-qsmart .brand-line {
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Quick action tiles on dashboards */
+.quick-tile {
+  border-radius: 14px;
+  padding: 1.25rem;
+  background: #fff;
+  box-shadow: var(--q-card-shadow);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform .15s, box-shadow .15s;
+  border: 1px solid transparent;
+}
+.quick-tile:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 77, 40, 0.12);
+  border-color: rgba(0, 166, 81, 0.25);
+  color: inherit;
+}
+.quick-tile i {
+  font-size: 1.75rem;
+  color: var(--q-green);
+}
+
+/* Empty state */
+.empty-state {
+  text-align: center;
+  padding: 2.5rem 1rem;
+  color: #64748b;
+}
+.empty-state i {
+  font-size: 2.5rem;
+  color: #94a3b8;
+  margin-bottom: 0.75rem;
+}
+
+/* Ticket status ribbon */
+.status-ribbon {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: 999px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* Auth pages */
+.auth-card {
+  border: 0;
+  border-radius: 16px;
+  box-shadow: 0 12px 40px rgba(0, 77, 40, 0.12);
+}
+.auth-logo {
+  width: 72px;
+  height: 72px;
+  border-radius: 16px;
+  margin-bottom: 0.75rem;
+}
+
+/* ========== Dark mode ========== */
+[data-theme="dark"] {
+  --q-bg: #0c1a12;
+  --q-card-shadow: 0 4px 18px rgba(0, 0, 0, 0.35);
+  --q-navy: #06140c;
+  color-scheme: dark;
+}
+
+[data-theme="dark"] body {
+  background-color: var(--q-bg);
+  color: #e2e8f0;
+}
+
+[data-theme="dark"] .stat-card,
+[data-theme="dark"] .inst-card,
+[data-theme="dark"] .quick-tile,
+[data-theme="dark"] .card,
+[data-theme="dark"] .list-group-item,
+[data-theme="dark"] .auth-card {
+  background: #132a1c !important;
+  color: #e2e8f0;
+  border-color: #1e3d2a !important;
+}
+
+[data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+[data-theme="dark"] .form-control,
+[data-theme="dark"] .form-select {
+  background: #0f2418;
+  border-color: #1e3d2a;
+  color: #e2e8f0;
+}
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+  background: #0f2418;
+  color: #e2e8f0;
+}
+[data-theme="dark"] .table { color: #e2e8f0; }
+[data-theme="dark"] .table-light { background: #1a3224 !important; color: #e2e8f0; }
+[data-theme="dark"] .list-group { --bs-list-group-bg: #132a1c; --bs-list-group-border-color: #1e3d2a; }
+[data-theme="dark"] .btn-outline-secondary { color: #cbd5e1; border-color: #475569; }
+[data-theme="dark"] .btn-outline-success { color: #4ade80; border-color: #166534; }
+[data-theme="dark"] .btn-outline-success:hover { background: #166534; color: #fff; }
+[data-theme="dark"] .map-box { border-color: #1e3d2a; }
+[data-theme="dark"] .footer-qsmart { background: #06140c; }
+[data-theme="dark"] .empty-state { color: #94a3b8; }
+[data-theme="dark"] .navbar-dark .navbar-toggler { border-color: rgba(255,255,255,.3); }
+
+.theme-toggle {
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.35);
+  color: #fff;
+  border-radius: 999px;
+  width: 36px;
+  height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.theme-toggle:hover { background: rgba(255,255,255,.12); }
+[data-theme="dark"] .bg-light {
+  background-color: #1a3224 !important;
+  color: #e2e8f0;
+}
+[data-theme="dark"] .alert-success {
+  background-color: #14532d;
+  border-color: #166534;
+  color: #bbf7d0;
+}
+[data-theme="dark"] .alert-info {
+  background-color: #0c4a6e;
+  border-color: #0369a1;
+  color: #bae6fd;
+}

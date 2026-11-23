@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block title %}{{ ticket.ticket_number }} – QSMART{% endblock %}
+{% block content %}
+<div class="container py-4" style="max-width:480px">
+  <div class="card border-0 shadow-sm p-4 text-center">
+    {% if ticket.institution %}
+    {% set code = (ticket.institution.code or '')|lower %}
+    <img src="{{ url_for('static', filename='images/institutions/' + code + '.png') }}"
+         alt="" width="56" height="56" class="rounded-3 mb-2 mx-auto"
+         onerror="this.style.display='none'">
+    {% endif %}
+    <div class="text-muted small">Ticket number</div>
+    <div class="display-5 fw-bold text-qsmart">{{ ticket.ticket_number }}</div>
+    <p class="mt-3 mb-1"><strong>{{ ticket.service.name }}</strong></p>
+    <p class="text-muted mb-2">{{ ticket.institution.name if ticket.institution else '' }}</p>
+    <span class="badge badge-{{ ticket.status }} fs-6 px-3 py-2 rounded-pill">{{ ticket.status }}</span>
+
+    {% if ticket.status == 'waiting' %}
+    <div class="row g-2 mt-4 text-start">
+      <div class="col-6">
+        <div class="bg-light rounded-3 p-3 text-center h-100">
+          <div class="text-muted small">Your position</div>
+          <div class="fs-3 fw-bold text-qsmart">#{{ ticket.position }}</div>
+        </div>
+      </div>
+      <div class="col-6">
+        <div class="bg-light rounded-3 p-3 text-center h-100">
+          <div class="text-muted small">Est. wait</div>
+          <div class="fs-3 fw-bold text-orange">~{{ ticket.estimated_wait or '—' }} <span class="fs-6">min</span></div>
+        </div>
+      </div>
+    </div>
+    {% if pickup_tip %}
+    <div class="alert alert-success small text-start mt-3 mb-0">
+      <i class="bi bi-lightbulb me-1"></i> {{ pickup_tip }}
+    </div>
+    {% endif %}
+    <p class="small text-muted mt-3 mb-0">We’ll notify you by SMS / in-app when you’re next. Stay close when position ≤ 2.</p>
+    <form method="POST" action="{{ url_for('customer.cancel_ticket', ticket_number=ticket.ticket_number) }}" onsubmit="return confirm('Cancel this ticket?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-outline-danger btn-sm mt-3">Cancel ticket</button>
+    </form>
+    {% elif ticket.status in ['called', 'serving'] %}
+    <div class="alert alert-success mt-4 mb-0">
+      <i class="bi bi-bell-fill me-1"></i> Please proceed to the counter now.
+      {% if ticket.counter %}<br><strong>{{ ticket.counter.name }}</strong>{% endif %}
+    </div>
+    {% elif ticket.status == 'completed' %}
+    <p class="text-muted mt-3 mb-0">This ticket has been completed. Thank you!</p>
+    {% endif %}
+    <a href="{{ url_for('customer.dashboard') }}" class="btn btn-link mt-3">← Back to dashboard</a>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block title %}QSMART Zambia — Smart Queue Management{% endblock %}
+{% block content %}
+<section class="hero-qsmart">
+  <div class="container text-center position-relative" style="z-index:1">
+    <img src="{{ url_for('static', filename='images/logo.png') }}" alt="QSMART Zambia" class="mb-3 rounded-4 shadow" style="width:110px;height:110px;object-fit:cover">
+    <h1 class="display-5 fw-bold mb-2">QSMART Zambia</h1>
+    <p class="lead mb-1 opacity-90">Smarter · Easier · Together</p>
+    <p class="mb-4 opacity-75 mx-auto" style="max-width:520px">Digital queues for banks, hospitals and government services. Less waiting, more clarity — on your phone.</p>
+    <a href="{{ url_for('auth.login') }}" class="btn btn-success btn-lg me-2 px-4">Login</a>
+    <a href="{{ url_for('auth.register') }}" class="btn btn-outline-light btn-lg me-2 px-4">Register</a>
+    <a href="{{ url_for('main.install') }}" class="btn btn-orange btn-lg mt-2 mt-md-0 px-4">
+      <i class="bi bi-download"></i> Get the app
+    </a>
+  </div>
+</section>
+
+{% if show_auth_modal %}
+<div class="modal fade show d-block" id="authModal" tabindex="-1" style="background:rgba(10,47,26,.78)">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content border-0 shadow-lg auth-card">
+      <div class="modal-header border-0 pb-0 justify-content-center">
+        <div class="text-center w-100">
+          <img src="{{ url_for('static', filename='images/logo-nav.png') }}" alt="" class="auth-logo">
+          <h5 class="modal-title fw-bold">Welcome to QSMART Zambia</h5>
+        </div>
+      </div>
+      <div class="modal-body">
+        <p class="text-muted small text-center">Choose your account type to continue.</p>
+        <div class="d-grid gap-2">
+          <a class="btn btn-outline-success text-start" href="{{ url_for('auth.login', role='customer') }}">
+            <strong><i class="bi bi-person me-1"></i> Customer</strong><br><span class="small text-muted">Join queues &amp; send queries</span>
+          </a>
+          <a class="btn btn-outline-success text-start" href="{{ url_for('auth.login', role='staff') }}">
+            <strong><i class="bi bi-person-badge me-1"></i> Staff</strong><br><span class="small text-muted">Manage queues (requires admin approval)</span>
+          </a>
+          <a class="btn btn-outline-success text-start" href="{{ url_for('auth.login', role='admin') }}">
+            <strong><i class="bi bi-shield-lock me-1"></i> Administrator</strong><br><span class="small text-muted">Approve staff &amp; system reports</span>
+          </a>
+        </div>
+        <hr>
+        <p class="small text-muted mb-0 text-center">
+          New customer or staff? <a href="{{ url_for('auth.register') }}">Register</a>
+          · <a href="{{ url_for('auth.forgot_password') }}">Forgot password</a>
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endif %}
+
+<section class="container py-5">
+  <div class="row g-4 text-center">
+    <div class="col-md-4">
+      <div class="card stat-card h-100 p-4">
+        <i class="bi bi-people display-6 text-qsmart"></i>
+        <h5 class="mt-3">Join a queue</h5>
+        <p class="text-muted small mb-0">Get a digital ticket and track your position in real time — no more standing in line for hours.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stat-card h-100 p-4">
+        <i class="bi bi-chat-dots display-6 text-qsmart"></i>
+        <h5 class="mt-3">Ask institutions</h5>
+        <p class="text-muted small mb-0">Send queries to PACRA, RTSA, banks and more — get replies in-app or by SMS.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card stat-card h-100 p-4">
+        <i class="bi bi-phone-vibrate display-6 text-qsmart"></i>
+        <h5 class="mt-3">SMS &amp; in-app alerts</h5>
+        <p class="text-muted small mb-0">Know when you are next so you arrive on time. Save your trip and your day.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="container pb-5">
+  <h2 class="h5 text-center mb-4">Trusted by Zambians at</h2>
+  <div class="row g-3 justify-content-center align-items-center text-center">
+    {% set brands = [('Zanaco','zanaco'), ('Absa','absa'), ('IZB','izb'), ('Standard Chartered','scb'), ('PACRA','pacra'), ('DEC','dec')] %}
+    {% for name, code in brands %}
+    <div class="col-4 col-sm-3 col-md-2">
+      <div class="bg-white rounded-3 p-2 shadow-sm d-inline-block">
+        <img src="{{ url_for('static', filename='images/institutions/' + code + '.png') }}" alt="{{ name }}" width="56" height="56" class="rounded-2">
+      </div>
+      <div class="small text-muted mt-1">{{ name }}</div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endblock %}

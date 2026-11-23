@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Queries{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h4">Institution queries</h1>
+  <div class="list-group">
+    {% for q in queries %}
+    <a href="{{ url_for('staff.query_detail', ref=q.reference) }}" class="list-group-item list-group-item-action d-flex justify-content-between">
+      <span><strong>{{ q.reference }}</strong> {{ q.subject }}</span>
+      <span class="badge text-bg-secondary">{{ q.status }}</span>
+    </a>
+    {% else %}<p class="text-muted">No queries.</p>{% endfor %}
+  </div>
+</div>
+{% endblock %}

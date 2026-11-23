@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="refresh" content="12">
+  <title>Now Serving – QSMART Zambia</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <style>
+    :root {
+      --green: #00A651;
+      --green-dark: #004D28;
+      --orange: #F7931E;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: linear-gradient(160deg, #06140c 0%, #0a2f1a 40%, #004D28 100%);
+      color: #fff;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      overflow: hidden;
+    }
+    .tv-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(0,0,0,.25);
+      border-bottom: 2px solid rgba(0,166,81,.4);
+    }
+    .tv-header img { height: 56px; border-radius: 12px; }
+    .tv-clock { font-variant-numeric: tabular-nums; font-size: 1.5rem; opacity: .9; }
+    .tv-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 1.5rem;
+      padding: 1.5rem 2rem;
+      height: calc(100vh - 90px);
+    }
+    @media (max-width: 900px) {
+      .tv-grid { grid-template-columns: 1fr; height: auto; }
+      body { overflow: auto; }
+    }
+    .panel {
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.1);
+      border-radius: 20px;
+      padding: 1.5rem;
+      display: flex;
+      flex-direction: column;
+    }
+    .panel-title {
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      opacity: .7;
+      margin-bottom: 1rem;
+    }
+    .now-serving-num {
+      font-size: clamp(4rem, 12vw, 8rem);
+      font-weight: 800;
+      line-height: 1;
+      color: #4ade80;
+      text-shadow: 0 0 40px rgba(0,166,81,.45);
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+    @keyframes pulse-glow {
+      0%, 100% { text-shadow: 0 0 30px rgba(0,166,81,.35); }
+      50% { text-shadow: 0 0 55px rgba(0,166,81,.65); }
+    }
+    .service-line { font-size: 1.4rem; opacity: .85; margin-top: .5rem; }
+    .counter-pill {
+      display: inline-block;
+      background: var(--green);
+      color: #fff;
+      padding: .35rem 1rem;
+      border-radius: 999px;
+      font-weight: 600;
+      margin-top: .75rem;
+    }
+    .waiting-list { list-style: none; padding: 0; margin: 0; flex: 1; overflow: hidden; }
+    .waiting-list li {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      padding: .65rem 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      font-size: 1.35rem;
+    }
+    .waiting-list li:first-child {
+      background: rgba(247,147,30,.15);
+      margin: 0 -1rem;
+      padding: .75rem 1rem;
+      border-radius: 12px;
+      border-bottom: none;
+    }
+    .pos {
+      width: 2.2rem;
+      height: 2.2rem;
+      border-radius: 50%;
+      background: rgba(255,255,255,.12);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 700;
+      font-size: .95rem;
+    }
+    .waiting-list li:first-child .pos { background: var(--orange); color: #fff; }
+    .ticket-code { font-weight: 700; letter-spacing: .03em; }
+    .svc-small { font-size: .9rem; opacity: .65; }
+    .footer-bar {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: .6rem 2rem;
+      background: rgba(0,0,0,.4);
+      font-size: .95rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .marquee {
+      overflow: hidden;
+      white-space: nowrap;
+      flex: 1;
+      margin-left: 1.5rem;
+    }
+    .marquee span {
+      display: inline-block;
+      padding-left: 100%;
+      animation: scroll 28s linear infinite;
+    }
+    @keyframes scroll {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    .empty { opacity: .5; font-size: 1.25rem; padding: 2rem 0; text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="tv-header">
+    <div class="d-flex align-items-center gap-3">
+      <img src="{{ url_for('static', filename='images/logo-nav.png') }}" alt="QSMART">
+      <div>
+        <div class="fw-bold fs-4">QSMART Zambia</div>
+        <div class="opacity-75 small">{{ institution_name or 'Smart Queue Display' }}</div>
+      </div>
+    </div>
+    <div class="tv-clock" id="clock">--:--</div>
+  </header>
+
+  <div class="tv-grid">
+    <div class="panel">
+      <div class="panel-title"><i class="bi bi-broadcast-pin me-2"></i> Now serving</div>
+      {% if serving %}
+        {% for t in serving %}
+        <div class="now-serving-num">{{ t.ticket_number }}</div>
+        <div class="service-line">{{ t.service.name if t.service else 'Service' }}</div>
+        {% if t.counter %}
+        <div class="counter-pill"><i class="bi bi-person-workspace me-1"></i> {{ t.counter.name }}</div>
+        {% endif %}
+        {% endfor %}
+      {% else %}
+        <div class="empty">No ticket being served</div>
+      {% endif %}
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><i class="bi bi-people me-2"></i> Waiting queue</div>
+      <ul class="waiting-list">
+        {% for t in waiting[:12] %}
+        <li>
+          <span class="pos">{{ loop.index }}</span>
+          <div>
+            <div class="ticket-code">{{ t.ticket_number }}</div>
+            <div class="svc-small">{{ t.service.name if t.service else '' }}</div>
+          </div>
+        </li>
+        {% else %}
+        <li class="empty border-0">No one waiting</li>
+        {% endfor %}
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bar">
+    <span><i class="bi bi-shield-check me-1"></i> Ticket numbers only · No personal names</span>
+    <div class="marquee">
+      <span>Welcome to QSMART Zambia — Smarter · Easier · Together &nbsp;·&nbsp; Please listen for your ticket number &nbsp;·&nbsp; Stay near the counters when you are next &nbsp;·&nbsp;</span>
+    </div>
+  </div>
+
+  <script>
+    // --- Live clock ---
+    function tick() {
+      var d = new Date();
+      var opts = { timeZone: 'Africa/Lusaka', hour: '2-digit', minute: '2-digit', second: '2-digit', hour12: false };
+      document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB', opts) + ' CAT';
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    // --- Now-serving chime ---
+    // Current tickets being served (from server)
+    var currentServing = [
+      {% for t in serving %}"{{ t.ticket_number }}"{% if not loop.last %},{% endif %}{% endfor %}
+    ];
+
+    function playChime() {
+      try {
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        // Pleasant two-tone notification
+        function tone(freq, start, dur, gain) {
+          var o = ctx.createOscillator();
+          var g = ctx.createGain();
+          o.type = 'sine';
+          o.frequency.value = freq;
+          g.gain.setValueAtTime(0, start);
+          g.gain.linearRampToValueAtTime(gain, start + 0.02);
+          g.gain.exponentialRampToValueAtTime(0.001, start + dur);
+          o.connect(g);
+          g.connect(ctx.destination);
+          o.start(start);
+          o.stop(start + dur + 0.05);
+        }
+        var t0 = ctx.currentTime;
+        tone(880, t0, 0.18, 0.35);       // A5
+        tone(1174.66, t0 + 0.16, 0.28, 0.3); // D6
+        tone(1318.51, t0 + 0.36, 0.35, 0.25); // E6
+      } catch (e) {
+        console.warn('Audio not available', e);
+      }
+    }
+
+    // Compare with previous page load (localStorage survives the meta refresh)
+    try {
+      var prev = JSON.parse(localStorage.getItem('qsmart_tv_serving') || '[]');
+      var isNew = currentServing.some(function (n) { return prev.indexOf(n) === -1; });
+      if (isNew && currentServing.length) {
+        // Need a user gesture on some browsers the first time — try anyway
+        playChime();
+        // Also announce ticket number if speech synthesis available
+        if (window.speechSynthesis && currentServing[0]) {
+          var u = new SpeechSynthesisUtterance('Now serving ' + currentServing[0].split('').join(' '));
+          u.lang = 'en-GB';
+          u.rate = 0.9;
+          window.speechSynthesis.speak(u);
+        }
+      }
+      localStorage.setItem('qsmart_tv_serving', JSON.stringify(currentServing));
+    } catch (e) {}
+
+    // Unlock audio on first click/tap (required by many browsers)
+    document.body.addEventListener('click', function unlock() {
+      try {
+        var ctx = new (window.AudioContext || window.webkitAudioContext)();
+        ctx.resume();
+      } catch (e) {}
+      document.body.removeEventListener('click', unlock);
+    }, { once: true });
+  </script>
+</body>
+</html>

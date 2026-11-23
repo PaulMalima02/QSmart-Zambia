@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{% block title %}{{ app_name }}{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}QSMART Zambia — smart queue management for banks, hospitals and government services. Join a queue on your phone, get notified when it's your turn.{% endblock %}">
+  <meta name="theme-color" content="#00A651">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="QSMART">
+  <meta name="application-name" content="QSMART Zambia">
+  <link rel="manifest" href="{{ url_for('static', filename='manifest.webmanifest') }}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{{ url_for('static', filename='images/favicon-32.png') }}">
+  <link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png') }}">
+  <!-- Open Graph / social share -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="{% block og_title %}QSMART Zambia{% endblock %}">
+  <meta property="og:description" content="{% block og_description %}Smart queues for Zambian public services — join, track and get notified on your phone.{% endblock %}">
+  <meta property="og:site_name" content="QSMART Zambia">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="QSMART Zambia">
+  <meta name="twitter:description" content="Smart queue management for banks, hospitals and government services in Zambia.">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+  <script>
+    (function(){
+      try {
+        var t = localStorage.getItem('qsmart_theme');
+        if (t === 'dark' || (!t && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      } catch(e){}
+    })();
+  </script>
+  {% block extra_css %}{% endblock %}
+</head>
+<body class="{% block body_class %}{% endblock %}">
+  {% block navbar %}
+  <nav class="navbar navbar-expand-lg navbar-dark bg-qsmart shadow-sm">
+    <div class="container">
+      <a class="navbar-brand fw-bold" href="{{ url_for('main.index') }}">
+        <img src="{{ url_for('static', filename='images/logo-nav.png') }}" alt="QSMART Zambia" width="36" height="36">
+        <span>QSMART <span class="d-none d-sm-inline">Zambia</span></span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMain" aria-controls="navMain" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navMain">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          {% if current_user.is_authenticated %}
+            {% if current_user.is_admin %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.dashboard') }}">Admin</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('admin.staff_list') }}">Staff approval</a></li>
+            {% elif current_user.is_staff %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('staff.dashboard') }}">Staff</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('staff.queue_manage') }}">Queue</a></li>
+            {% else %}
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.dashboard') }}">Dashboard</a></li>
+              <li class="nav-item"><a class="nav-link" href="{{ url_for('customer.join_queue') }}">Join queue</a></li>
+            {% endif %}
+            {% if unread_count %}
+            <li class="nav-item">
+              <a class="nav-link position-relative" href="{% if current_user.is_staff %}{{ url_for('staff.queries') }}{% else %}{{ url_for('customer.notifications') }}{% endif %}">
+                <i class="bi bi-bell"></i>
+                <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-warning text-dark" style="font-size:0.65rem">{{ unread_count }}</span>
+              </a>
+            </li>
+            {% endif %}
+            <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.logout') }}">Logout</a></li>
+          {% else %}
+            <li class="nav-item"><a class="btn btn-outline-light btn-sm" href="{{ url_for('auth.login') }}">Login</a></li>
+            <li class="nav-item"><a class="btn btn-success btn-sm" href="{{ url_for('auth.register') }}">Register</a></li>
+          {% endif %}
+            <li class="nav-item">
+              <button type="button" class="theme-toggle" id="themeToggle" title="Toggle dark mode" aria-label="Toggle dark mode">
+                <i class="bi bi-moon-stars" id="themeIcon"></i>
+              </button>
+            </li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+  {% endblock %}
+
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <div class="container mt-3">
+      {% for category, message in messages %}
+      <div class="alert alert-{{ 'danger' if category == 'error' else category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+  {% endwith %}
+
+  <main class="{% block main_class %}{% endblock %}">
+    {% block content %}{% endblock %}
+  </main>
+
+  {% block footer %}
+  <footer class="footer-qsmart">
+    <div class="container">
+      <div class="row g-4 align-items-center">
+        <div class="col-md-5 text-center text-md-start">
+          <div class="d-flex align-items-center justify-content-center justify-content-md-start gap-2 mb-2">
+            <img src="{{ url_for('static', filename='images/logo-nav.png') }}" alt="" width="40" height="40" class="rounded-3">
+            <span class="brand-line">QSMART Zambia</span>
+          </div>
+          <p class="small mb-0 opacity-75">Smarter · Easier · Together — digital queues for banks, hospitals &amp; public services.</p>
+        </div>
+        <div class="col-md-3 text-center text-md-start">
+          <div class="small text-uppercase opacity-50 mb-1">Quick links</div>
+          <a href="{{ url_for('main.index') }}">Home</a> ·
+          <a href="{{ url_for('main.install') }}">Install app</a> ·
+          <a href="{{ url_for('main.privacy') }}">Privacy</a>
+        </div>
+        <div class="col-md-4 text-center text-md-end small">
+          <div class="mb-1">© 2026 QSMART Zambia</div>
+          <div class="opacity-75">Built for Zambians</div>
+        </div>
+      </div>
+    </div>
+  </footer>
+  {% endblock %}
+
+  <!-- Install app banner — Android + iPhone -->
+  <div id="pwaInstallBar" class="d-none position-fixed bottom-0 start-0 end-0 p-3" style="z-index:9998;background:rgba(10,47,26,.97)">
+    <div class="container text-white">
+      <div class="d-flex flex-wrap align-items-start justify-content-between gap-2">
+        <div class="small flex-grow-1">
+          <strong id="pwaInstallTitle">Install QSMART on this phone</strong>
+          <div id="pwaInstallHint" class="opacity-75 mt-1"></div>
+        </div>
+        <div class="d-flex gap-2 flex-shrink-0">
+          <button type="button" class="btn btn-success btn-sm" id="pwaInstallBtn">Install</button>
+          <a class="btn btn-outline-light btn-sm" href="/install" id="pwaInstallHow">How to</a>
+          <button type="button" class="btn btn-outline-light btn-sm" id="pwaInstallDismiss">✕</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+  {% block extra_js %}{% endblock %}
+  <div id="offlineBanner" class="d-none position-fixed bottom-0 start-0 end-0 bg-warning text-dark text-center py-2 small" style="z-index:9999">
+    You are offline. Cached pages still work; queue and query actions need a connection.
+  </div>
+  <script>
+  // Dark mode toggle
+  (function(){
+    var btn = document.getElementById('themeToggle');
+    var icon = document.getElementById('themeIcon');
+    function apply(theme) {
+      document.documentElement.setAttribute('data-theme', theme);
+      try { localStorage.setItem('qsmart_theme', theme); } catch(e){}
+      if (icon) {
+        icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+      }
+    }
+    var current = document.documentElement.getAttribute('data-theme') || 'light';
+    if (icon) icon.className = current === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+    if (btn) btn.addEventListener('click', function(){
+      var next = (document.documentElement.getAttribute('data-theme') === 'dark') ? 'light' : 'dark';
+      apply(next);
+    });
+  })();
+
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('{{ url_for("static", filename="js/sw.js") }}').catch(function(){});
+  }
+  function syncOnline() {
+    var b = document.getElementById('offlineBanner');
+    if (!b) return;
+    b.classList.toggle('d-none', navigator.onLine);
+  }
+  window.addEventListener('online', syncOnline);
+  window.addEventListener('offline', syncOnline);
+  syncOnline();
+
+  // PWA install — Android (prompt) + iPhone (instructions)
+  (function () {
+    var deferred = null;
+    var bar = document.getElementById('pwaInstallBar');
+    var btn = document.getElementById('pwaInstallBtn');
+    var dismiss = document.getElementById('pwaInstallDismiss');
+    var title = document.getElementById('pwaInstallTitle');
+    var hint = document.getElementById('pwaInstallHint');
+    if (!bar || !btn) return;
+    if (localStorage.getItem('qsmart_pwa_dismissed')) return;
+
+    var ua = navigator.userAgent || '';
+    var isIOS = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var isAndroid = /Android/i.test(ua);
+    var isMobile = isIOS || isAndroid || /Mobile/i.test(ua);
+    var isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+
+    if (isStandalone) return;
+
+    function showBar(mode) {
+      bar.classList.remove('d-none');
+      if (mode === 'ios') {
+        if (title) title.textContent = 'Add QSMART to your iPhone';
+        if (hint) hint.innerHTML = 'Tap <strong>Share</strong> <span aria-hidden="true">⬆️</span> then <strong>Add to Home Screen</strong>.';
+        btn.classList.add('d-none');
+      } else if (mode === 'android-manual') {
+        if (title) title.textContent = 'Install QSMART on Android';
+        if (hint) hint.innerHTML = 'Chrome menu <strong>⋮</strong> → <strong>Install app</strong> or <strong>Add to Home screen</strong>.';
+        btn.classList.add('d-none');
+      } else {
+        if (title) title.textContent = 'Install QSMART on this phone';
+        if (hint) hint.textContent = 'Add to your home screen for quick access.';
+        btn.classList.remove('d-none');
+      }
+    }
+
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferred = e;
+      showBar('prompt');
+    });
+
+    if (isIOS && isMobile) {
+      showBar('ios');
+    } else if (isAndroid && isMobile) {
+      setTimeout(function () {
+        if (!deferred) showBar('android-manual');
+      }, 2500);
+    }
+
+    btn.addEventListener('click', function () {
+      if (!deferred) {
+        window.location.href = '/install';
+        return;
+      }
+      deferred.prompt();
+      deferred.userChoice.then(function () {
+        deferred = null;
+        bar.classList.add('d-none');
+      });
+    });
+    if (dismiss) {
+      dismiss.addEventListener('click', function () {
+        localStorage.setItem('qsmart_pwa_dismissed', '1');
+        bar.classList.add('d-none');
+      });
+    }
+  })();
+  </script>
+</body>
+</html>

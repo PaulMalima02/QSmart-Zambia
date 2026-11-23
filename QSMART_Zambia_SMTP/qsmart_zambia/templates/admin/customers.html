@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Customers{% endblock %}
+{% block content %}
+<div class="container py-4">
+  <h1 class="h4">Customers</h1>
+  <table class="table table-sm">
+    <thead><tr><th>Name</th><th>Email</th><th>Phone</th><th>Joined</th></tr></thead>
+    <tbody>
+      {% for u in customers %}
+      <tr>
+        <td>{{ u.full_name or u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td>{{ u.phone or '—' }}</td>
+        <td class="small">{{ u.created_at.strftime('%d %b %Y') }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
